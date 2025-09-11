@@ -4,7 +4,7 @@ import { client } from "../mqttClient";
 import TargetCursor from "./TargetCursor.vue";
 import ConnectionStatus from "./ConnectionStatus.vue";
 import GradualBlur from "./GradualBlur.vue";
-import ShinyText from "./ShinyText.vue";
+import LiveCharts from "./LiveCharts.vue";
 
 type WeatherMsg = {
   stationId?: string;
@@ -15,8 +15,8 @@ type WeatherMsg = {
 
 // ---- Configurable sanity limits ----
 const TEMP_MIN = -50;
-const TEMP_MAX = 100;
-const TEMP_SENTINEL = -999;
+const TEMP_MAX = 60;
+const TEMP_SENTINELS = new Set<number>([-999]);
 const HUM_MIN = 0;
 const HUM_MAX = 100;
 
@@ -49,7 +49,7 @@ function formatCH(ts: WeatherMsg["timestamp"]) {
   return chFormatter.format(d).replace(",", "");
 }
 
-// --- helpers to normalize and validate incoming data ---
+// --- normalize + flag incoming data ---
 const toNum = (v: unknown): number | null => {
   if (v === null || v === undefined) return null;
   const n = typeof v === "string" ? parseFloat(v) : Number(v);
@@ -60,41 +60,18 @@ function normalizeAndFlag(data: WeatherMsg): Row {
   const t = toNum(data.temperature);
   const h = toNum(data.humidity);
 
-  let badTemp = false,
-    reasonTemp: string | undefined;
-  if (t === null) {
-    badTemp = true;
-    reasonTemp = "missing";
-  } else if (t === TEMP_SENTINEL) {
-    badTemp = true;
-    reasonTemp = "sentinel -999";
-  } else if (t < TEMP_MIN || t > TEMP_MAX) {
-    badTemp = true;
-    reasonTemp = `out of range (${TEMP_MIN}…${TEMP_MAX})`;
-  }
+  let badTemp = false, reasonTemp: string | undefined;
+  if (t === null) { badTemp = true; reasonTemp = "missing"; }
+  else if (TEMP_SENTINELS.has(t)) { badTemp = true; reasonTemp = "sentinel"; }
+  else if (t < TEMP_MIN || t > TEMP_MAX) { badTemp = true; reasonTemp = `out of range (${TEMP_MIN}…${TEMP_MAX})`; }
 
-  let badHumidity = false,
-    reasonHumidity: string | undefined;
-  if (h === null) {
-    badHumidity = true;
-    reasonHumidity = "missing";
-  } else if (h < HUM_MIN || h > HUM_MAX) {
-    badHumidity = true;
-    reasonHumidity = `out of range (${HUM_MIN}…${HUM_MAX})`;
-  }
+  let badHumidity = false, reasonHumidity: string | undefined;
+  if (h === null) { badHumidity = true; reasonHumidity = "missing"; }
+  else if (h < HUM_MIN || h > HUM_MAX) { badHumidity = true; reasonHumidity = `out of range (${HUM_MIN}…${HUM_MAX})`; }
 
-  return {
-    ...data,
-    t,
-    h,
-    badTemp,
-    badHumidity,
-    reasonTemp,
-    reasonHumidity,
-  };
+  return { ...data, t, h, badTemp, badHumidity, reasonTemp, reasonHumidity };
 }
 
-// formatting helpers for display
 const fmt = (n: number | null, digits = 1) =>
   n === null || !Number.isFinite(n) ? "—" : n.toFixed(digits);
 
@@ -130,18 +107,19 @@ onBeforeUnmount(() => {
     <!-- sticky header -->
     <div class="sticky top-0 z-10 bg-[var(--bg)]">
       <div class="flex items-center justify-between py-4 gap-4">
-        <ShinyText
-          text="Live Weather"
-          :disabled="false"
-          :speed="3"
-          class-name="text-5xl cursor-target"
-        />
+        <h1 class="text-5xl cursor-target">Live Weather</h1>
         <ConnectionStatus
           label="MQTT"
           broker="ws://localhost:9001"
           class="cursor-target"
         />
       </div>
+    </div>
+
+    <!-- live charts -->
+    <div class="py-3 cursor-target">
+      <!-- LiveCharts treats invalid readings as gaps -->
+      <LiveCharts :messages="messages" :maxPoints="240" />
     </div>
 
     <!-- scrollable list -->
@@ -152,18 +130,14 @@ onBeforeUnmount(() => {
           :key="i"
           class="py-3 flex items-baseline gap-3 border-b-2 border-neutral-800"
         >
-          <!-- index -->
-          <span
-            class="w-10 shrink-0 text-right text-xs opacity-60 tabular-nums select-none"
-          >
+          <!-- aligned index -->
+          <span class="w-10 shrink-0 text-right text-xs opacity-60 tabular-nums select-none">
             {{ messages.length - i }}
           </span>
 
           <!-- content -->
           <div class="flex flex-wrap gap-x-2 gap-y-1">
-            <strong class="cursor-target p-1.5">{{
-              m.stationId ?? "unknown"
-            }}</strong>
+            <strong class="cursor-target p-1.5">{{ m.stationId ?? "unknown" }}</strong>
 
             <!-- temperature -->
             <span
@@ -175,9 +149,9 @@ onBeforeUnmount(() => {
               <span
                 v-if="m.badTemp"
                 class="ml-1 align-middle text-[10px] px-1.5 py-0.5 rounded border border-red-500/30 bg-red-500/10 text-red-400"
-                >bad</span
-              >
+              >bad</span>
             </span>
+
 
             <!-- humidity -->
             <span
@@ -189,8 +163,7 @@ onBeforeUnmount(() => {
               <span
                 v-if="m.badHumidity"
                 class="ml-1 align-middle text-[10px] px-1.5 py-0.5 rounded border border-red-500/30 bg-red-500/10 text-red-400"
-                >bad</span
-              >
+              >bad</span>
             </span>
 
             <!-- timestamp -->
@@ -222,8 +195,5 @@ onBeforeUnmount(() => {
 </template>
 
 <style>
-/* fallback border color if Tailwind didn't load */
-li {
-  border-color: #262626;
-}
+li { border-color: #262626; }
 </style>
