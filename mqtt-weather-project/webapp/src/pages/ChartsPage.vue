@@ -30,10 +30,10 @@ const filtered = computed<WeatherMsg[]>(() => {
   <div class="max-w-6xl mx-auto px-3 py-4">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-      <h1 class="text-3xl">Charts</h1>
+      <h1 class="text-3xl cursor-target">Charts</h1>
       <div class="flex items-center gap-2">
         <label class="text-sm opacity-80">Station:</label>
-        <select v-model="selected" class="select">
+        <select v-model="selected" class="select cursor-target">
           <option>All</option>
           <option v-for="s in stations" :key="s" :value="s">{{ s }}</option>
         </select>
@@ -48,7 +48,7 @@ const filtered = computed<WeatherMsg[]>(() => {
     <!-- Mini charts per station -->
     <div class="mt-8">
       <h2 class="text-xl mb-3">Per station</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
         <div v-for="s in stations" :key="s" class="card p-3">
           <div class="mb-2 flex items-center justify-between">
             <strong>{{ s }}</strong>
