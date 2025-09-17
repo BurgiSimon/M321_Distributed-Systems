@@ -142,10 +142,10 @@ const humOptions = {
 
 <template>
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-    <div class="card p-3 h-56">
+    <div class="card p-3 h-56 cursor-target">
       <Line :data="tempData" :options="tempOptions" />
     </div>
-    <div class="card p-3 h-56">
+    <div class="card p-3 h-56 cursor-target">
       <Line :data="humData" :options="humOptions" />
     </div>
   </div>

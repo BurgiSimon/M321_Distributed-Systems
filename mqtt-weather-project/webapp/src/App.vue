@@ -1,35 +1,67 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import ConnectionStatus from "@/components/ConnectionStatus.vue";
+import GradualBlur from "./components/GradualBlur.vue";
+import TargetCursor from "./components/TargetCursor.vue";
+</script>
 
 <template>
   <div class="min-h-screen flex flex-col">
     <!-- Top nav -->
-    <header class="sticky top-0 z-20 bg-[var(--bg)] border-b border-[var(--border)]">
-      <nav class="max-w-6xl mx-auto px-3 py-3 flex items-center justify-between gap-4">
-        <div class="text-lg font-semibold">MQTT Weather</div>
-        <div class="flex gap-2">
+    <header
+      class="sticky top-0 z-20 bg-[var(--bg)] border-b border-[var(--border)]"
+    >
+      <nav
+        class="max-w-6xl mx-auto px-3 py-3 flex items-center justify-between gap-4"
+      >
+        <div class="text-lg font-semibold cursor-target no-underline">
           <RouterLink
             to="/"
-            class="px-3 py-1.5 rounded hover:bg-[var(--surface-2)]"
+            class="cursor-target"
+            style="color: inherit; text-decoration: none"
+            >MQTT Weather</RouterLink
+          >
+        </div>
+
+        <div class="flex items-center gap-3">
+          <RouterLink
+            to="/"
+            class="px-3 py-1.5 rounded hover:bg-[var(--surface-2)] cursor-target"
             active-class="bg-[var(--surface-2)]"
             exact-active-class="bg-[var(--surface-2)]"
-          >Main</RouterLink>
+            style="color: inherit;"
+            >Main</RouterLink
+          >
+
           <RouterLink
             to="/charts"
-            class="px-3 py-1.5 rounded hover:bg-[var(--surface-2)]"
+            class="px-3 py-1.5 rounded hover:bg-[var(--surface-2)] cursor-target"
             active-class="bg-[var(--surface-2)]"
-          >Charts</RouterLink>
-          <RouterLink
-            to="/log"
-            class="px-3 py-1.5 rounded hover:bg-[var(--surface-2)]"
-            active-class="bg-[var(--surface-2)]"
-          >Log</RouterLink>
+            style="color: inherit;"
+            >Charts</RouterLink
+          >
+
+          <!-- Always-visible status pill (also targets custom cursor) -->
+          <ConnectionStatus
+            label="MQTT"
+            broker="ws://localhost:9001"
+            class="cursor-target"
+          />
         </div>
       </nav>
     </header>
 
-    <!-- Routed pages -->
     <main class="flex-1">
+      <TargetCursor :spin-duration="5" :hide-default-cursor="true" />
       <RouterView />
     </main>
   </div>
+
+  <!-- bottom blur pinned to viewport -->
+  <GradualBlur
+    target="page"
+    position="bottom"
+    preset="footer"
+    height="3rem"
+    :zIndex="25"
+  />
 </template>
