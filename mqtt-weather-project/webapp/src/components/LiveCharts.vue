@@ -42,7 +42,7 @@ const temps = computed(() => {
   const slice = props.messages.slice(0, props.maxPoints).reverse()
   return slice.map(m => {
     const t = toNum(m.temperature)
-    return isBadTemp(t) ? null : t
+    return isBadTemp(t) ? NaN : t
   })
 })
 
@@ -50,7 +50,7 @@ const hums = computed(() => {
   const slice = props.messages.slice(0, props.maxPoints).reverse()
   return slice.map(m => {
     const h = toNum(m.humidity)
-    return isBadHum(h) ? null : h
+    return isBadHum(h) ? NaN : h
   })
 })
 
@@ -62,6 +62,9 @@ const colPrim   = styles.getPropertyValue('--primary').trim()|| '#60a5fa'
 const colSucc   = styles.getPropertyValue('--success').trim()|| '#22c55e'
 const gridColor = styles.getPropertyValue('--border').trim() || '#2a2b2f'
 
+
+const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
+
 const tempData = computed(() => ({
   labels: labels.value,
   datasets: [{
@@ -69,11 +72,15 @@ const tempData = computed(() => ({
     data: temps.value,
     borderColor: colPrim,
     backgroundColor: colPrim + '33',
-    spanGaps: false,
+    spanGaps: true,
     tension: 0.25,
     pointRadius: 0,
     borderWidth: 2,
     fill: true,
+    segment: {
+        borderColor: ctx => skipped(ctx, 'rgba(234,2,2,0.7)'),
+        borderDash: ctx => skipped(ctx, [6, 6]),
+    },
   }]
 }))
 
@@ -84,11 +91,15 @@ const humData = computed(() => ({
     data: hums.value,
     borderColor: colSucc,
     backgroundColor: colSucc + '33',
-    spanGaps: false,
+    spanGaps: true,
     tension: 0.25,
     pointRadius: 0,
     borderWidth: 2,
     fill: true,
+    segment: {
+        borderColor: ctx => skipped(ctx, 'rgba(234,2,2,0.7)'),
+        borderDash: ctx => skipped(ctx, [6, 6]),
+    },
   }]
 }))
 
@@ -96,21 +107,6 @@ const baseOptions = {
   responsive: true,
   maintainAspectRatio: false,
   animation: { duration: 200 },
-  plugins: {
-    legend: { labels: { color: colText } },
-    tooltip: {
-      mode: 'index' as const,
-      intersect: false,
-      callbacks: {
-        // show gaps as "—"
-        label: (ctx: any) => {
-          const v = ctx.parsed.y
-          if (v === null || Number.isNaN(v)) return `${ctx.dataset.label}: —`
-          return `${ctx.dataset.label}: ${v}`
-        }
-      }
-    }
-  },
   scales: {
     x: {
       ticks: { color: colMut, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 },
