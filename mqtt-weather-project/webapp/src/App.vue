@@ -40,6 +40,14 @@ import TargetCursor from "./components/TargetCursor.vue";
             >Charts</RouterLink
           >
 
+          <RouterLink
+            to="/history"
+            class="px-3 py-1.5 rounded hover:bg-[var(--surface-2)] cursor-target"
+            active-class="bg-[var(--surface-2)]"
+            style="color: inherit;"
+            >History</RouterLink
+          >
+
           <!-- Always-visible status pill (also targets custom cursor) -->
           <ConnectionStatus
             label="MQTT"

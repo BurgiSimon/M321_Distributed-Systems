@@ -100,3 +100,31 @@ export function useWeather() {
     setMax: (n: number) => { maxLen.value = Math.max(1, n | 0) }
   }
 }
+
+const API_BASE = "http://localhost:3000";
+
+async function fetchHistory(stationId: string, minutesBack = 120) {
+  const to = Date.now();
+  const from = to - minutesBack * 60_000;
+  const url = new URL("/api/history", API_BASE);
+  url.searchParams.set("stationId", stationId);
+  url.searchParams.set("from", String(from));
+  url.searchParams.set("to", String(to));
+  url.searchParams.set("limit", "5000");
+  url.searchParams.set("bad", "drop"); // or "keep"
+
+  const res = await fetch(url.toString());
+  if (!res.ok) return;
+
+  const rows: Array<{ ts: number; stationId: string; temperature: number|null; humidity: number|null }> = await res.json();
+
+  // transform rows into your existing message shape
+  const initial = rows.map(r => ({
+    stationId: r.stationId,
+    temperature: r.temperature,
+    humidity: r.humidity,
+    timestamp: r.ts, // ms
+  }));
+
+  messages.value = [...initial, ...messages.value];
+}

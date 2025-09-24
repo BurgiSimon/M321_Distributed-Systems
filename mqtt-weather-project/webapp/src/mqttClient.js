@@ -1,4 +1,4 @@
-import mqtt from "mqtt";             // default import
+import mqtt from "mqtt";
 export const client = mqtt.connect("ws://localhost:9001", {
   clientId: "webapp-" + Math.random().toString(16).slice(2),
   clean: true,

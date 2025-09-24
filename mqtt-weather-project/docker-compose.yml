@@ -46,3 +46,16 @@ services:
     depends_on:
       mosquitto:
         condition: service_healthy
+
+  ingestor:
+    build: ./ingestor
+    environment:
+      - MQTT_URL=mqtt://mosquitto:1883
+      - MQTT_TOPIC=weather
+      - DB_PATH=/data/weather.db
+    volumes:
+      - ./data:/data
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mosquitto
