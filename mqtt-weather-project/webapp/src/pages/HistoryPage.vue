@@ -90,36 +90,70 @@ const labels = computed(() =>
   data.value.map(r => new Date(r.ts).toLocaleString("de-CH", { hour12: false }))
 );
 
-const temps = computed(() => data.value.map(r => r.temperature));
-const hums  = computed(() => data.value.map(r => r.humidity));
+const isBadTemp = (t: number | null | undefined) =>
+  t == null || t === -999 || t < -50 || t > 60;
+
+const isBadHum = (h: number | null | undefined) =>
+  h == null || h < 0 || h > 100;
+
+const temps = computed(() =>
+  data.value.map(r => (isBadTemp(r.temperature) ? null : r.temperature))
+);
+
+const hums = computed(() =>
+  data.value.map(r => (isBadHum(r.humidity) ? null : r.humidity))
+);
+
+/** colors from your dark theme */
+const styles = getComputedStyle(document.documentElement)
+const colText   = styles.getPropertyValue('--text').trim()   || '#e7e7ea'
+const colMut    = styles.getPropertyValue('--muted').trim()  || '#a0a0a8'
+const colPrim   = styles.getPropertyValue('--primary').trim()|| '#60a5fa'
+const colSucc   = styles.getPropertyValue('--success').trim()|| '#22c55e'
+const gridColor = styles.getPropertyValue('--border').trim() || '#2a2b2f'
+
+const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
+
+
+
 
 const tempChartData = computed(() => ({
   labels: labels.value,
-  datasets: [
-    {
-      label: "Temperature (°C)",
-      data: temps.value,
-      borderWidth: 2,
-      spanGaps: true,
-      pointRadius: 0,
-      tension: 0.2,
-    }
-  ]
-}));
+  datasets: [{
+    label: 'Temperature (°C)',
+    data: temps.value,
+    borderColor: colPrim,
+    backgroundColor: colPrim + '33',
+    spanGaps: true,
+    tension: 0.25,
+    pointRadius: 0,
+    borderWidth: 2,
+    fill: true,
+    segment: {
+        borderColor: ctx => skipped(ctx, 'rgba(234,2,2,0.7)'),
+        borderDash: ctx => skipped(ctx, [6, 6]),
+    },
+  }]
+}))
 
 const humChartData = computed(() => ({
   labels: labels.value,
-  datasets: [
-    {
-      label: "Humidity (%)",
-      data: hums.value,
-      borderWidth: 2,
-      spanGaps: true,
-      pointRadius: 0,
-      tension: 0.2,
-    }
-  ]
-}));
+  datasets: [{
+    label: 'Humidity (%)',
+    data: hums.value,
+    borderColor: colSucc,
+    backgroundColor: colSucc + '33',
+    spanGaps: true,
+    tension: 0.25,
+    pointRadius: 0,
+    borderWidth: 2,
+    fill: true,
+    segment: {
+        borderColor: ctx => skipped(ctx, 'rgba(234,2,2,0.7)'),
+        borderDash: ctx => skipped(ctx, [6, 6]),
+    },
+  }]
+}))
 
 const commonOpts = {
   responsive: true,
