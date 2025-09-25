@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import ConnectionStatus from "@/components/ConnectionStatus.vue";
 import GradualBlur from "./components/GradualBlur.vue";
 import TargetCursor from "./components/TargetCursor.vue";
+
+const customcursor = ref(true);
 </script>
 
 <template>
@@ -28,7 +31,7 @@ import TargetCursor from "./components/TargetCursor.vue";
             class="px-3 py-1.5 rounded hover:bg-[var(--surface-2)] cursor-target"
             active-class="bg-[var(--surface-2)]"
             exact-active-class="bg-[var(--surface-2)]"
-            style="color: inherit;"
+            style="color: inherit"
             >Main</RouterLink
           >
 
@@ -36,7 +39,7 @@ import TargetCursor from "./components/TargetCursor.vue";
             to="/charts"
             class="px-3 py-1.5 rounded hover:bg-[var(--surface-2)] cursor-target"
             active-class="bg-[var(--surface-2)]"
-            style="color: inherit;"
+            style="color: inherit"
             >Charts</RouterLink
           >
 
@@ -44,9 +47,16 @@ import TargetCursor from "./components/TargetCursor.vue";
             to="/history"
             class="px-3 py-1.5 rounded hover:bg-[var(--surface-2)] cursor-target"
             active-class="bg-[var(--surface-2)]"
-            style="color: inherit;"
+            style="color: inherit"
             >History</RouterLink
           >
+
+          <button
+            @click="customcursor = !customcursor"
+            class="px-3 py-1.5 rounded hover:bg-[var(--surface-2)] cursor-target"
+          >
+          t
+          </button>
 
           <!-- Always-visible status pill (also targets custom cursor) -->
           <ConnectionStatus
@@ -55,11 +65,16 @@ import TargetCursor from "./components/TargetCursor.vue";
             class="cursor-target"
           />
         </div>
+        
       </nav>
     </header>
 
     <main class="flex-1">
-      <TargetCursor :spin-duration="5" :hide-default-cursor="true" />
+      <TargetCursor
+        :spin-duration="5"
+        :hide-default-cursor="true"
+        v-if="customcursor"
+      />
       <RouterView />
     </main>
   </div>
