@@ -170,7 +170,7 @@ const commonOpts = {
 
 <template>
   <div class="p-4 max-w-6xl mx-auto space-y-6 pb-20">
-    <h1 class="text-2xl font-bold ">History</h1>
+    <h1 class="text-2xl font-bold cursor-target w-min p-1">History</h1>
 
     <div class="grid gap-3 md:grid-cols-6 items-end">
       <label class="flex flex-col md:col-span-1">
