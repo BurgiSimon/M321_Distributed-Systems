@@ -1,13 +1,19 @@
 version: "3.9"
-
 services:
   mosquitto:
     image: eclipse-mosquitto
     ports:
       - "1883:1883"
+      - "9001:9001"
     volumes:
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 5 mosquitto_pub -h localhost -t healthcheck -m 'test' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+      
   station1:
     build:
       context: ./stations
@@ -15,7 +21,10 @@ services:
     environment:
       - STATION_ID=WS-01
       - INTERVAL=5
-
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+        
   station2:
     build:
       context: ./stations
@@ -23,7 +32,10 @@ services:
     environment:
       - STATION_ID=WS-02
       - INTERVAL=7
-
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+        
   station3:
     build:
       context: ./stations
@@ -31,3 +43,19 @@ services:
     environment:
       - STATION_ID=WS-03
       - INTERVAL=3
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+
+  ingestor:
+    build: ./ingestor
+    environment:
+      - MQTT_URL=mqtt://mosquitto:1883
+      - MQTT_TOPIC=weather
+      - DB_PATH=/data/weather.db
+    volumes:
+      - ./data:/data
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mosquitto

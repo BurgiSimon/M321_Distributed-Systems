@@ -1,0 +1,244 @@
+/* Tailwind layers (keep these at the top) */
+@import "tailwindcss";
+
+/* =========
+   Dark theme tokens (default)
+   ========= */
+:root {
+  color-scheme: dark;
+
+  /* Core palette */
+  --bg: #0b0b0c;
+  --surface: #131416;
+  --surface-2: #191a1d;
+  --border: #2a2b2f;
+
+  --text: #e7e7ea;
+  --muted: #a0a0a8;
+
+  --primary: #60a5fa; /* sky-400 */
+  --ring: #2563eb; /* blue-600 */
+
+  --success: #22c55e;
+  --warn: #f59e0b;
+  --error: #ef4444;
+
+  /* Radii & shadows */
+  --radius: 16px;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 6px 24px rgb(0 0 0 / 0.25);
+  --shadow-lg: 0 12px 40px rgb(0 0 0 / 0.3);
+
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox, Safari 18.2+, Chromium 121+ */
+}
+
+/* Optional: quick light theme override (opt-in) */
+.theme-light {
+  color-scheme: light;
+
+  --bg: #f7f7f9;
+  --surface: #ffffff;
+  --surface-2: #f2f3f5;
+  --border: #e6e7eb;
+
+  --text: #0b0b0c;
+  --muted: #666a73;
+
+  --primary: #2563eb; /* blue-600 */
+  --ring: #2563eb;
+}
+
+/* =========
+   Base element styling
+   ========= */
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Text selection */
+::selection {
+  background: color-mix(in oklab, var(--primary) 50%, transparent);
+  color: var(--text);
+}
+
+/* Links */
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* Code blocks */
+code,
+pre {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    monospace;
+}
+pre {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 4px);
+  padding: 0.75rem 1rem;
+  box-shadow: var(--shadow-sm);
+  overflow: auto;
+}
+
+/* Scrollbars (Firefox + WebKit) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3a3b40 var(--bg);
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+*::-webkit-scrollbar-thumb {
+  background: #2c2d31;
+  border-radius: 8px;
+  border: 2px solid var(--bg);
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #3a3b40;
+}
+
+/* =========
+   Utility-ish classes (composable)
+   ========= */
+
+/* Focus ring helper (use on buttons/inputs/cards) */
+.focus-ring {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--ring),
+    0 0 0 4px color-mix(in oklab, var(--bg) 80%, transparent);
+}
+
+/* Card container */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+}
+
+/* Sub-surface (for selected/hover states) */
+.card-muted {
+  background: var(--surface-2);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: calc(var(--radius) - 6px);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 120ms ease,
+    background 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+}
+.btn:hover {
+  background: var(--surface-2);
+  border-color: color-mix(in oklab, var(--border) 70%, var(--text) 30%);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--ring),
+    0 0 0 4px color-mix(in oklab, var(--bg) 80%, transparent);
+}
+
+.btn-primary {
+  background: color-mix(in oklab, var(--primary) 24%, var(--surface));
+  border-color: color-mix(in oklab, var(--primary) 42%, var(--border));
+}
+.btn-primary:hover {
+  background: color-mix(in oklab, var(--primary) 36%, var(--surface));
+}
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+}
+.btn-ghost:hover {
+  background: color-mix(in oklab, var(--text) 6%, transparent);
+}
+
+/* Inputs (text, select, textarea) */
+.input,
+.select,
+.textarea {
+  width: 100%;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 8px);
+  padding: 0.5rem 0.75rem;
+  box-shadow: none;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    background 120ms ease;
+}
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--muted);
+}
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: color-mix(in oklab, var(--ring) 60%, var(--border));
+  box-shadow:
+    0 0 0 2px var(--ring),
+    0 0 0 4px color-mix(in oklab, var(--bg) 80%, transparent);
+  outline: none;
+}
+
+/* Subtle separators */
+.hr {
+  height: 1px;
+  width: 100%;
+  background: var(--border);
+  border: 0;
+}
+
+/* Fades for scroll containers (useful for your AnimatedList gradients) */
+.fade-top {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 50px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, var(--bg), transparent);
+}
+.fade-bottom {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 100px;
+  pointer-events: none;
+  background: linear-gradient(to top, var(--bg), transparent);
+}
