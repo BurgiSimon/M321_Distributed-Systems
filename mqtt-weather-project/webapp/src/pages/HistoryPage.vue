@@ -17,8 +17,7 @@ const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:3000";
 // UI state
 const stations = ref<Array<{ stationId: string; firstTs: number; lastTs: number; count: number }>>([]);
 const stationId = ref<string>("");
-const bad = ref<"keep"|"drop">("drop");
-const limit = ref<number>(5000);
+const limit = ref<number>(1000);
 
 // default: last 2h
 const now = () => new Date();
@@ -68,7 +67,6 @@ async function fetchHistory() {
       from: String(parseLocalDT(from.value)),
       to: String(parseLocalDT(to.value)),
       limit: String(limit.value),
-      bad: bad.value,
     });
     const res = await fetch(`${API_BASE}/api/history?` + params.toString());
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -175,7 +173,7 @@ const commonOpts = {
     <h1 class="text-2xl font-bold ">History</h1>
 
     <div class="grid gap-3 md:grid-cols-6 items-end">
-      <label class="flex flex-col md:col-span-2">
+      <label class="flex flex-col md:col-span-1">
         <span class="text-sm opacity-80 mb-1">Station</span>
         <select v-model="stationId" class="select px-3 py-2 cursor-target">
           <option v-for="s in stations" :key="s.stationId" :value="s.stationId">
@@ -184,22 +182,14 @@ const commonOpts = {
         </select>
       </label>
 
-      <label class="flex flex-col">
+      <label class="flex flex-col md:col-span-2">
         <span class="text-sm opacity-80 mb-1">From</span>
         <input v-model="from" type="datetime-local" class="select px-3 py-2 cursor-target" />
       </label>
 
-      <label class="flex flex-col">
+      <label class="flex flex-col md:col-span-2">
         <span class="text-sm opacity-80 mb-1">To</span>
         <input v-model="to" type="datetime-local" class="select px-3 py-2 cursor-target" />
-      </label>
-
-      <label class="flex flex-col">
-        <span class="text-sm opacity-80 mb-1">Bad values</span>
-        <select v-model="bad" class="select border rounded px-3 py-2 cursor-target">
-          <option value="drop">drop</option>
-          <option value="keep">keep</option>
-        </select>
       </label>
 
       <label class="flex flex-col">
@@ -212,9 +202,9 @@ const commonOpts = {
       </button>
     </div>
 
-    <p v-if="errorMsg" class="text-red-600">{{ errorMsg }}</p>
+    <p v-if="errorMsg" class="text-red-500">{{ errorMsg }}</p>
 
-    <div class="grid md:grid-cols-2 gap-6 select">
+    <div class="grid md:grid-cols-1 gap-6 select">
       <div class="h-64 md:h-80  rounded p-2 cursor-target">
         <Line :data="tempChartData" :options="commonOpts" />
       </div>
