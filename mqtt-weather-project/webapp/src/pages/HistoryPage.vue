@@ -171,13 +171,13 @@ const commonOpts = {
 </script>
 
 <template>
-  <div class="p-4 max-w-6xl mx-auto space-y-6">
+  <div class="p-4 max-w-6xl mx-auto space-y-6 pb-20">
     <h1 class="text-2xl font-bold ">History</h1>
 
     <div class="grid gap-3 md:grid-cols-6 items-end">
       <label class="flex flex-col md:col-span-2">
         <span class="text-sm opacity-80 mb-1">Station</span>
-        <select v-model="stationId" class="border rounded px-3 py-2 cursor-target">
+        <select v-model="stationId" class="select px-3 py-2 cursor-target">
           <option v-for="s in stations" :key="s.stationId" :value="s.stationId">
             {{ s.stationId }} ({{ s.count }})
           </option>
@@ -186,17 +186,17 @@ const commonOpts = {
 
       <label class="flex flex-col">
         <span class="text-sm opacity-80 mb-1">From</span>
-        <input v-model="from" type="datetime-local" class="border rounded px-3 py-2 cursor-target" />
+        <input v-model="from" type="datetime-local" class="select px-3 py-2 cursor-target" />
       </label>
 
       <label class="flex flex-col">
         <span class="text-sm opacity-80 mb-1">To</span>
-        <input v-model="to" type="datetime-local" class="border rounded px-3 py-2 cursor-target" />
+        <input v-model="to" type="datetime-local" class="select px-3 py-2 cursor-target" />
       </label>
 
       <label class="flex flex-col">
         <span class="text-sm opacity-80 mb-1">Bad values</span>
-        <select v-model="bad" class="border rounded px-3 py-2 cursor-target">
+        <select v-model="bad" class="select border rounded px-3 py-2 cursor-target">
           <option value="drop">drop</option>
           <option value="keep">keep</option>
         </select>
@@ -204,26 +204,26 @@ const commonOpts = {
 
       <label class="flex flex-col">
         <span class="text-sm opacity-80 mb-1">Limit</span>
-        <input v-model.number="limit" type="number" min="1" max="10000" class="border rounded px-3 py-2 cursor-target" />
+        <input v-model.number="limit" type="number" min="1" max="10000" class="select px-3 py-2 cursor-target" />
       </label>
 
-      <button @click="fetchHistory" class="md:col-span-6 border rounded px-4 py-2 hover:bg-black/5 cursor-target">
+      <button @click="fetchHistory" class="md:col-span-6 px-4 py-2 btn cursor-target">
         {{ loading ? "Loading…" : "Load history" }}
       </button>
     </div>
 
     <p v-if="errorMsg" class="text-red-600">{{ errorMsg }}</p>
 
-    <div class="grid md:grid-cols-2 gap-6">
-      <div class="h-64 md:h-80 border rounded p-2 cursor-target">
+    <div class="grid md:grid-cols-2 gap-6 select">
+      <div class="h-64 md:h-80  rounded p-2 cursor-target">
         <Line :data="tempChartData" :options="commonOpts" />
       </div>
-      <div class="h-64 md:h-80 border rounded p-2 cursor-target">
+      <div class="h-64 md:h-80  rounded p-2 cursor-target">
         <Line :data="humChartData" :options="commonOpts" />
       </div>
     </div>
 
-    <div class="overflow-auto border rounded">
+    <div class="overflow-auto border rounded select">
       <table class="w-full text-sm">
         <thead class="bg-black/5 cursor-target">
           <tr>
