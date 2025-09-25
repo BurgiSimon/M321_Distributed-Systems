@@ -51,13 +51,6 @@ const customcursor = ref(true);
             >History</RouterLink
           >
 
-          <button
-            @click="customcursor = !customcursor"
-            class="px-3 py-1.5 rounded hover:bg-[var(--surface-2)] cursor-target"
-          >
-          t
-          </button>
-
           <!-- Always-visible status pill (also targets custom cursor) -->
           <ConnectionStatus
             label="MQTT"
@@ -65,7 +58,6 @@ const customcursor = ref(true);
             class="cursor-target"
           />
         </div>
-        
       </nav>
     </header>
 
@@ -87,4 +79,13 @@ const customcursor = ref(true);
     height="3rem"
     :zIndex="25"
   />
+
+  <button
+    @click="customcursor = !customcursor"
+    class="fixed bottom-15 right-4 px-3 py-2 cursor-target btn"
+    :aria-pressed="customcursor"
+    title="Toggle custom cursor"
+  >
+    {{ customcursor ? "Cursor: ON" : "Cursor: OFF" }}
+  </button>
 </template>
