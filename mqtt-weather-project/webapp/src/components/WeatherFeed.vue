@@ -35,7 +35,7 @@ const fmt = (n: number | null, digits = 1) =>
 
 <template>
 
-  <div class="mx-2">
+  <div class="mx-2 pb-20">
     <div class="">
       <LiveCharts :messages="messages" :maxPoints="240" />
     </div>
@@ -93,7 +93,6 @@ const fmt = (n: number | null, digits = 1) =>
     </div>
   </div>
 
-  <GradualBlur target="page" position="bottom" height="3rem" :zIndex="25" />
 </template>
 
 <style>

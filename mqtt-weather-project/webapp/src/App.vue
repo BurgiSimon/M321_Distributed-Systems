@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import ConnectionStatus from "@/components/ConnectionStatus.vue";
 import GradualBlur from "./components/GradualBlur.vue";
 import TargetCursor from "./components/TargetCursor.vue";
+
+const customcursor = ref(true);
 </script>
 
 <template>
@@ -28,7 +31,7 @@ import TargetCursor from "./components/TargetCursor.vue";
             class="px-3 py-1.5 rounded hover:bg-[var(--surface-2)] cursor-target"
             active-class="bg-[var(--surface-2)]"
             exact-active-class="bg-[var(--surface-2)]"
-            style="color: inherit;"
+            style="color: inherit"
             >Main</RouterLink
           >
 
@@ -36,7 +39,7 @@ import TargetCursor from "./components/TargetCursor.vue";
             to="/charts"
             class="px-3 py-1.5 rounded hover:bg-[var(--surface-2)] cursor-target"
             active-class="bg-[var(--surface-2)]"
-            style="color: inherit;"
+            style="color: inherit"
             >Charts</RouterLink
           >
 
@@ -44,7 +47,7 @@ import TargetCursor from "./components/TargetCursor.vue";
             to="/history"
             class="px-3 py-1.5 rounded hover:bg-[var(--surface-2)] cursor-target"
             active-class="bg-[var(--surface-2)]"
-            style="color: inherit;"
+            style="color: inherit"
             >History</RouterLink
           >
 
@@ -59,7 +62,11 @@ import TargetCursor from "./components/TargetCursor.vue";
     </header>
 
     <main class="flex-1">
-      <TargetCursor :spin-duration="5" :hide-default-cursor="true" />
+      <TargetCursor
+        :spin-duration="5"
+        :hide-default-cursor="true"
+        v-if="customcursor"
+      />
       <RouterView />
     </main>
   </div>
@@ -72,4 +79,13 @@ import TargetCursor from "./components/TargetCursor.vue";
     height="3rem"
     :zIndex="25"
   />
+
+  <button
+    @click="customcursor = !customcursor"
+    class="fixed bottom-15 right-4 px-3 py-2 cursor-target btn"
+    :aria-pressed="customcursor"
+    title="Toggle custom cursor"
+  >
+    {{ customcursor ? "Cursor: ON" : "Cursor: OFF" }}
+  </button>
 </template>

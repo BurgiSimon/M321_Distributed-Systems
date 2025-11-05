@@ -27,7 +27,7 @@ const filtered = computed<WeatherMsg[]>(() => {
 </script>
 
 <template>
-  <div class="max-w-6xl mx-auto px-3 py-4">
+  <div class="max-w-6xl mx-auto px-3 py-4 pb-20">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
       <h1 class="text-3xl cursor-target">Charts</h1>
