@@ -1,10 +1,20 @@
 services:
+  loadbalancer:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend1
+      - backend2
+      - backend3
+    restart: unless-stopped
+
   backend1:
     build:
       context: .
       dockerfile: Dockerfile.server
-    ports:
-      - "3001:3000"
     environment:
       - PORT=3000
       - BACKENDS=backend2:3000,backend3:3000
@@ -14,8 +24,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.server
-    ports:
-      - "3002:3000"
     environment:
       - PORT=3000
       - BACKENDS=backend1:3000,backend3:3000
@@ -25,8 +33,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.server
-    ports:
-      - "3003:3000"
     environment:
       - PORT=3000
       - BACKENDS=backend1:3000,backend2:3000
