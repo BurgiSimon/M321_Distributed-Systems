@@ -33,13 +33,36 @@ app.get('/counter', async (_req, res) => {
   res.json({ counter });
 });
 
+// Get counters from all servers (for testing sync)
+app.get('/counters', async (_req, res) => {
+  const results = {
+    [process.env.HOSTNAME || 'self']: counter
+  };
+
+  for (const peer of backendList) {
+    try {
+      const r = await fetchWithTimeout(`http://${peer}/counter`, {}, 2000);
+      if (r.ok) {
+        const data = await r.json();
+        results[peer] = data.counter;
+      } else {
+        results[peer] = 'error';
+      }
+    } catch (e) {
+      results[peer] = `unreachable: ${e.message}`;
+    }
+  }
+
+  res.json(results);
+});
+
 // Task also mentions /increment
 app.get('/increment', async (_req, res) => {
   await simulateLatency();
 
   // 1) Local increment
   counter++;
-  console.log(`[${process.env.HOSTNAME}] /increment -> ${counter}`);
+  console.log(`[${process.env.HOSTNAME}] Incremented counter ${counter}`);
 
   // 2) Best-effort replication to peers (fire sequentially for clarity)
   for (const peer of backendList) {
@@ -59,7 +82,7 @@ app.get('/increment', async (_req, res) => {
 app.post('/replicate-increment', async (_req, res) => {
   await simulateLatency();
   counter++;
-  console.log(`[${process.env.HOSTNAME}] /replicate-increment -> ${counter}`);
+  console.log(`[${process.env.HOSTNAME}] replicate-increment ${counter}`);
   res.json({ ok: true, counter });
 });
 

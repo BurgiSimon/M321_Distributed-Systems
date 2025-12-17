@@ -1,13 +1,12 @@
 const axios = require('axios');
 
 const TARGETS = [
-  'http://localhost:3001/increment',
-  'http://localhost:3002/increment',
-  'http://localhost:3003/increment'
+  'http://localhost:8080/increment'
 ];
 
 const REQUESTS_PER_SECOND = 20;
-const DURATION_SECONDS = 100;
+const DURATION_SECONDS = 10;
+let SPAM_COUNTERS = 0;
 
 async function spamIncrements() {
   console.log(`Spamming ${REQUESTS_PER_SECOND} req/s for ${DURATION_SECONDS}s…`);
@@ -17,7 +16,9 @@ async function spamIncrements() {
     for (const target of TARGETS) {
       axios.get(target)
         .then(res => {
-          console.log(`${target} counter=${res.data.counter}`);
+          SPAM_COUNTERS++;
+          console.log(`Spamming Counter: ${SPAM_COUNTERS}`);
+          console.log(`Response: ${target} counter=${res.data.counter}`);
         })
         .catch(err => {
           console.error(`Error calling ${target}:`, err.message);
